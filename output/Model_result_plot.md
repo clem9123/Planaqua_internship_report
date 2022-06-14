@@ -1,17 +1,7 @@
----
-title: "R Notebook"
-output: github_document
----
+R Notebook
+================
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
-setwd("..")
-source("R/setup.R")
-source("R/MODEL_visualisation_function.R")
-
-load("output/Model_Treatment_capture.RData")
-```
-
-```{r}
+``` r
 theme_set(theme_bw()+
             theme(strip.background =element_rect(fill="white", color = "darkgrey"),
                   panel.background = element_rect(fill = "#F2F2F2"),
@@ -21,7 +11,7 @@ theme_set(theme_bw()+
                   axis.title.y = element_text(margin = margin(r = 10))))
 ```
 
-```{r fig.height=4, fig.width=8}
+``` r
 model = Model_Treatment_capture
 
 ggplot(get_p(model))+
@@ -30,7 +20,11 @@ ggplot(get_p(model))+
                     ymin = min, ymax = max), width = 0.4)+
   labs(y = "Capture probability", x = "Size group")+
   ylim(0,1)
+```
 
+![](Model_result_plot_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
 ggplot(get_epsilon(model))+
   geom_point(aes(x = factor(Lake), y = mean))+
   geom_errorbar(aes(x = factor(Lake), ymin = min, ymax = max), width = 0.4)+
@@ -38,8 +32,12 @@ ggplot(get_epsilon(model))+
   labs(x = "Lake", y = "Epsilon distribution probability")
 ```
 
+    ## `summarise()` has grouped output by 'Lake'. You can override using the
+    ## `.groups` argument.
 
-```{r fig.height=4, fig.width=8}
+![](Model_result_plot_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+
+``` r
 ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
   geom_point(aes(x = Treatment, y = mean))+
   geom_errorbar(aes(x = Treatment, ymin = min, ymax = max), width = 1)+
@@ -50,8 +48,12 @@ ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = fac
   ylim(0,1)
 ```
 
+    ## `summarise()` has grouped output by 'Size', 'Treatment'. You can override using
+    ## the `.groups` argument.
 
-```{r fig.height=4, fig.width=8}
+![](Model_result_plot_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
 ggplot(get_psi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
   geom_point(aes(x = Treatment, y = mean))+
   geom_errorbar(aes(x = Treatment, ymin = min, ymax = max), width = 1)+
@@ -62,8 +64,12 @@ ggplot(get_psi(model) %>% filter(Exp_time == "After treatment"), aes(color = fac
   ylim(0,1)
 ```
 
+    ## `summarise()` has grouped output by 'Size', 'Treatment'. You can override using
+    ## the `.groups` argument.
 
-```{r fig.height=4, fig.width=8}
+![](Model_result_plot_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
 ggplot(get_n(model),aes(y = mean, x = Year, color = Treatment))+
   geom_point(aes(y = mean, x = Year, color = Treatment))+
   #geom_line(aes(group = Treatment))+
@@ -71,3 +77,8 @@ ggplot(get_n(model),aes(y = mean, x = Year, color = Treatment))+
   facet_grid(rows = vars(Size), cols = vars(Treatment))+
   labs(y = "Abundance")
 ```
+
+    ## `summarise()` has grouped output by 'Size', 'Treatment'. You can override using
+    ## the `.groups` argument.
+
+![](Model_result_plot_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
