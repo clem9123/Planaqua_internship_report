@@ -1,7 +1,12 @@
 ---
-title: "R Notebook"
+title: "Model result visualisation"
 output: github_document
 ---
+
+```{r echo = FALSE}
+knitr::opts_chunk$set(echo=FALSE,message=FALSE, warning=FALSE)
+```
+
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 setwd("..")
@@ -21,6 +26,8 @@ theme_set(theme_bw()+
                   axis.title.y = element_text(margin = margin(r = 10))))
 ```
 
+## Capture Probability and variability
+### Mean capture probability
 ```{r fig.height=4, fig.width=8}
 model = Model_Treatment_capture
 
@@ -30,7 +37,10 @@ ggplot(get_p(model))+
                     ymin = min, ymax = max), width = 0.4)+
   labs(y = "Capture probability", x = "Size group")+
   ylim(0,1)
+```
 
+### Variation around mean capture probability for each event
+```{r fig.height=4, fig.width=8}
 ggplot(get_epsilon(model))+
   geom_point(aes(x = factor(Lake), y = mean))+
   geom_errorbar(aes(x = factor(Lake), ymin = min, ymax = max), width = 0.4)+
@@ -38,6 +48,7 @@ ggplot(get_epsilon(model))+
   labs(x = "Lake", y = "Epsilon distribution probability")
 ```
 
+## Survival
 
 ```{r fig.height=4, fig.width=8}
 ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
@@ -50,6 +61,7 @@ ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = fac
   ylim(0,1)
 ```
 
+## Growth
 
 ```{r fig.height=4, fig.width=8}
 ggplot(get_psi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
@@ -62,6 +74,7 @@ ggplot(get_psi(model) %>% filter(Exp_time == "After treatment"), aes(color = fac
   ylim(0,1)
 ```
 
+## Abundance
 
 ```{r fig.height=4, fig.width=8}
 ggplot(get_n(model),aes(y = mean, x = Year, color = Treatment))+
@@ -71,3 +84,10 @@ ggplot(get_n(model),aes(y = mean, x = Year, color = Treatment))+
   facet_grid(rows = vars(Size), cols = vars(Treatment))+
   labs(y = "Abundance")
 ```
+
+## You can get a table of the result with uncertainty :
+
+```{r, echo = TRUE, result = FALSE}
+Model_Treatment_capture[[2]][10]
+```
+

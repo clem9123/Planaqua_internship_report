@@ -34,25 +34,22 @@ See section [Tag data bases]() for more precision, else a quick summary :
 
   - **BDD_original complet.xslx**: row dataset input from the experiment \
     see explanation : [BDD_original_complet.xlsx explanation]()
-  - **data_final.xlsx**, cleaned version of BDD_original with unification of notation and elimination of incoherent data probably coming from experipmental input error (such as tag_id found in wrong lake) \
-    see explanation : [data_final.xlsx explanation]()
-  - **data_final_ws.xlsx** : data_final with additional weight and size for juveniles and 2022 \
-    see hypothesis and precision : [data_final_ws.xlsx explanation]()
-  - **data_final_ws_norm.xlsx** : data_final with additional weight and size for juveniles and 2022 by using a normal distribution \
-  this is the data used in my following analyses and the creation of usable subset (see section [Hands on the data, getting started]()) \
-    see hypothesis and precision on this data : [data_final_ws_norm.xlsx explanation]()
+  - **data_final_ws_norm.xlsx** : cleaned version of BDD_original with unification of notation and elimination of incoherent data probably coming from experipmental input error (such as tag_id found in wrong lake) \
+  data_final with additional weight and size for juveniles and 2022 by using a normal distribution \
+  this is the data used in my following analyses, see hypothesis and precision on this data : [data_final_ws_norm.xlsx explanation]()
 
 #### Other data
 
   - **Lake_treatment.xlsx** : a table containing the experimental characteristics of each lake : Nutrients enrichment, presence of perch (predator species), and a Treatment column summarizing the two
-    see precision : [Lake_tretment.xlsx explanation]()
-  - **capture_history.inp** : a file containing usable data for capture recapture analyses with mark, i.e. capture history and corresponding frequencies
-    see construction and esplanation : [capture_history.inp explanation]()
+    see precision : [Lake_tretment.xlsx explanation]())
 
-### Scripts
+### R Scripts
 
  - **construction_BDD.Rmd**
  - **importation_data.R**
+ - **setup.R**
+ - **Jags_CJS_model**
+ - **MODEL_visualisation_function.R**
 
 ## Diving deeper in the data
 
@@ -70,9 +67,25 @@ Not necessary for a simple data usage. Need data cleaning before analyses.
 
 \
 
-#### data_final.xlsx explanation
+#### data_final_ws_norm.xlsx explanation
 
 Cleaned version of BDD_original_complet.xlsx, see the [construction_BDD.Rmd](construction_BDD.Rmd) file to precisely see the modification that where made. (Not necessary for a simple usage of the data)\
+
+Specific hypothesis on Weight and size : \
+
+**For juveniles** : weight and size where added using a normal distribution coming from the measured and weighted juveniles from the same Lake and Year \
+This was done for two reasons :
+
+  - It's closer to the biologic reality
+  - It diminishes the bias toward one over-represented value \\
+
+**For jan 2022** :\
+The hypothesis is that fishes weight and size didn't change between nov 2021 and jan 2022, because of the time gap (4 months only) and the fact that winter is a slow growth period \
+This can be verified because some fishes where weighted at both occasion.
+This difference didn't seem significant, I then accepted the first hypothesis\
+Weight and size where added in 2022 by taking the associated weight and size from nov 2021
+
+\
 
 ##### Columns description
 
@@ -99,38 +112,13 @@ Let's see how it looks \
 ```{r Head of the data, echo=TRUE}
 
 library(readxl)
-BDD_f <- read_excel("data/data_final.xlsx", 
+BDD_f <- read_excel("data/data_final_ws_norm.xlsx", 
                     col_types = c("numeric","date","text","text","text","text","text",
                                   "text","text","numeric","numeric","text","text"), na = "")
 knitr::kable(head(BDD_f))
 ```
 
 \
-
-#### data_final_ws.xlsx explanation
-
-Same as above but weight and size where added as such
-
-**For the juveniles** : \
-Adding the mean weight and size of the measured and weighted juveniles from the same Lake and Year
-
-**For jan 2022** :\
-The hypothesis is that fishes weight and size didn't change between nov 2021 and jan 2022, because of the time gap (4 months only) and the fact that winter is a slow growth period \
-This can be verified because some fishes where weighted at both occasion.
-This difference didn't seem significant, I then accepted the first hypothesis\
-Weight and size where added in 2022 by taking the associated weight and size from nov 2021
-
-\
-
-#### data_final_ws_norm.xlsx explanation
-
-Exactly the same as above but
-
-**For juveniles** : weight and size where added using a normal distribution coming from the measured and weighted juveniles from the same Lake and Year \
-This was done for two reasons :
-
-  - It's closer to the biologic reality
-  - It diminishes the bias toward one over-represented value
 
 ### Other useful data
 #### Lake_treatment.xlsx explanation
@@ -152,25 +140,28 @@ knitr::kable(head(Lake_treatment))
 
 \
 
-#### capture_history.inp explanation
+### Script description
 
-This data is useful for capture recapture study and can be used with the RMark library \
-Can be used for exemple with the Jolly-Seber models from oliviergimenez available on [one of his github repositories](https://github.com/oliviergimenez/bayes-multistate-jollyseber) \
-\
-**How was it made ?** \
-Construction with capture_history.R ([see the code for details](capture_history.R)) from the data of [data_ws_norm.xlsx](data/data_ws_norm.xlsx) after importation (thanks to [importation_data.R](data/importation_data.R))\
-Utilization of a subset of the data containing only tagged fishes from the annual fisheries of November.
-Then summarizing the data to get : \
+#### construction_BDD.Rmd
+Cleaning of the data take BDD_original complet.xslx as input and create data_final_ws_norm.xlsx \
 
-```{r echo=TRUE, message=FALSE, warning=FALSE}
-#library(RMark)
-#popan <- convert.inp("data/capture_history.inp")
-#colnames(popan) <- c("capture_history", "frequency") # simply for better comprehension here
-#head(popan)
-```
+#### importation_data.R
+Take data_final_ws_norm.xlsx and import the data in different data frame :
+  - BDD_f : all the data
+  - BDD_g : every roaches in trawl capture event
+  - BDD_a : every adult (i.e. tagged) roaches in trawl capture event
+  - BDD_p : every perches in trawl capture event \\
 
+#### setup.R
+**Should be used first**
+Import data, all the necessary library, and create jags.data (data for the model)
 
+#### Jags_CJS_model
+Model description and everything to run it
+**Can simply be ran as such, everything is alredy imported** \
 
+#### MODEL_visualisation_function.R 
+Create function to extract and visualize the output model \
 
 ## Hands on the data, getting started, quick guide
 
@@ -178,4 +169,4 @@ This is a little explanation of how to get started with this data \
 It's often complicated to dive into such analyses so I wanted to give anyone who wants to use in a way in.\
 There are probably other ways to look at the data but if you are in a hurry, or want to wrap your head around all this to get a better understanding, here is what you can do :
 
-To be continued... (and where to put some data visualisation + numbers of line and column for every data.frame to have an idea of what we are dealing with)
+To be continued... (and where to put some data visualization + numbers of line and column for every data.frame to have an idea of what we are dealing with)
