@@ -88,6 +88,6 @@ ggplot(get_n(model),aes(y = mean, x = Year, color = Treatment))+
 ## You can get a table of the result with uncertainty :
 
 ```{r, echo = TRUE, result = FALSE}
-Model_Treatment_capture[[2]][10]
+head(data.frame(Model_Treatment_capture[[2]][10]))
 ```
 
