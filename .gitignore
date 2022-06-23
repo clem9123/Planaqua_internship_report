@@ -1,5 +1,6 @@
-.Rproj.user
-.RData
-.Rhistory
-.Ruserdata
-.Rproj
+# ignore files
+*.Rproj.user
+*.RData
+*.Rhistory
+*.Ruserdata
+*.Rproj
