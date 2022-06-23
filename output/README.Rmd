@@ -51,9 +51,11 @@ ggplot(get_epsilon(model))+
 ## Survival
 
 ```{r fig.height=4, fig.width=8}
+# color for nutrients (in my oral pres) : ,type = c("#31B404","#6E6E6E","#31B404","#6E6E6E")
+
 ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
-  geom_point(aes(x = Treatment, y = mean))+
-  geom_errorbar(aes(x = Treatment, ymin = min, ymax = max), width = 1)+
+  geom_point(aes(x = factor(Treatment), y = mean))+
+  geom_errorbar(aes(x = factor(Treatment), ymin = min, ymax = max), width = 1)+
   scale_color_discrete("Treatment")+
   facet_wrap(~Size)+
   theme(axis.text.x=element_blank(),axis.ticks=element_blank(),axis.title.x=element_blank())+
@@ -65,8 +67,8 @@ ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = fac
 
 ```{r fig.height=4, fig.width=8}
 ggplot(get_psi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
-  geom_point(aes(x = Treatment, y = mean))+
-  geom_errorbar(aes(x = Treatment, ymin = min, ymax = max), width = 1)+
+  geom_point(aes(x = factor(Treatment), y = mean))+
+  geom_errorbar(aes(x = factor(Treatment), ymin = min, ymax = max), width = 1)+
   facet_wrap(~Size)+
   scale_color_discrete("Treatment")+
   theme(axis.text.x=element_blank(),axis.ticks=element_blank(),axis.title.x=element_blank())+
@@ -88,6 +90,30 @@ ggplot(get_n(model),aes(y = mean, x = Year, color = Treatment))+
 ## You can get a table of the result with uncertainty :
 
 ```{r, echo = TRUE, result = FALSE}
-head(data.frame(Model_Treatment_capture[[2]][10]))
+knitr::kable(head(data.frame(Model_Treatment_capture[[2]][10])))
+```
+
+```{r fig.height=5, fig.width=10}
+load("Model_Treatment_capture_reverse.RData")
+model = Model_Treatment_capture_reverse
+p1 <- ggplot(get_phi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
+  geom_point(aes(x = factor(Treatment), y = mean))+
+  geom_errorbar(aes(x = factor(Treatment), ymin = min, ymax = max), width = 1)+
+  scale_color_discrete("Treatment")+
+  facet_wrap(~Size)+
+  theme(axis.text.x=element_blank(),axis.ticks=element_blank(),axis.title.x=element_blank())+
+  labs(y = "Survival probability")+
+  ylim(0,1)
+
+p2 <- ggplot(get_psi(model) %>% filter(Exp_time == "After treatment"), aes(color = factor(Treatment)))+
+  geom_point(aes(x = factor(Treatment), y = mean))+
+  geom_errorbar(aes(x = factor(Treatment), ymin = min, ymax = max), width = 1)+
+  facet_wrap(~Size)+
+  scale_color_discrete("Treatment")+
+  theme(axis.text.x=element_blank(),axis.ticks=element_blank(),axis.title.x=element_blank())+
+  labs(y = "Growth probability")+
+  ylim(0,1)
+
+p1+p2
 ```
 
